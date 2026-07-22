@@ -13,60 +13,58 @@
 #include "config.h"
 #include "capture.h"
 #include "display.h"
-//#include "generator.h"
+#include "generator.h"
 #include "hardware.h"
 //#include "menu.h"
-//#include "statistics.h"
-#include "types.h"
+#include "statistics.h"
+#include "app.h"
 #include "version.h"
 
 namespace
 {
-    App::Mode currentMode = App::Mode::Scope;
-
-    uint16_t outputPulseUs = Config::ServoCentreUs;
+    App::Mode currentMode;
 
     void handleButton();
 }
+
 void setup()
 {
     Hardware::init();
-
-    Capture::init();
-
     Display::init();
+    Generator::init();
+    Capture::init();
+    Statistics::init();
 
     Display::splash();
 }
 
+
 void loop()
 {
+    handleButton();
+
     Capture::update();
 
-    const auto capture = Capture::getMeasurement();
+    const auto measurement = Capture::getMeasurement();
+
+    Statistics::update(measurement);
+
+    const auto stats = Statistics::data();
 
     Display::Data display{};
 
     display.mode = currentMode;
 
-    display.signalPresent = capture.signalPresent;
-
-    display.inputPulseUs = capture.pulseWidthUs;
-
-    display.outputPulseUs = outputPulseUs;
-
-    // Temporary until Statistics module exists
-    display.stable = false;
-    display.stablePulseUs = 0;
-    display.acquiringSamples = 0;
+    display.signalPresent     = stats.signalPresent;
+    display.stable            = stats.stable;
+    display.inputPulseUs      = stats.pulseWidthUs;
+    display.stablePulseUs     = stats.stablePulseUs;
+    display.acquiringSamples  = stats.sampleCount;
+    display.outputPulseUs     = Generator::outputPulseUs();
 
     Display::setData(display);
 
     Display::refresh();
-
-    handleButton();
-
-    Hardware::setServoPulse(outputPulseUs);
 }
 
 namespace
@@ -74,7 +72,10 @@ namespace
 
 void handleButton()
 {
-    // TODO
+    if (Hardware::buttonPressed())
+    {
+        Generator::nextPreset();
+    }
 }
 
 }

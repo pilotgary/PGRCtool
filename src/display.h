@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "types.h"
+#include "app.h"
 
 namespace Display
 {

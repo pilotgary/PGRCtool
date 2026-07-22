@@ -22,7 +22,7 @@ struct Measurement
 
     uint8_t acquiringSamples;
 
-    uint32_t pulseCount;
+    uint32_t sampleNumber;
 };
 
 bool init();

@@ -121,7 +121,7 @@ void update()
     {
         currentMeasurement.pulseWidthUs = pulse;
 
-        currentMeasurement.pulseCount = count;
+        currentMeasurement.sampleNumber = count;
     }
 
     currentMeasurement.signalPresent =
