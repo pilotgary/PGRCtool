@@ -71,7 +71,7 @@ namespace Display
 
         oled.setFont(u8g2_font_ncenB10_tr);
 
-        const char title[] = "PWM Scope";
+        const char title[] = "SparkyFlight-S3";
 
         const int titleWidth =
             oled.getStrWidth(title);
@@ -145,7 +145,7 @@ namespace
             oled.drawVLine(x, Top, Bottom - Top);
         }
 
-        oled.drawStr(2, 62, "50us/pixel");
+        oled.drawStr(2, 63, "50us/Pixel");
 
         if (!displayData.signalPresent)
         {
@@ -253,7 +253,16 @@ namespace
         oled.drawStr(
             0,
             10,
-            "PWM SCOPE  0-5V IN");
+            "SparkyFlight-S3");
+
+        const char vrange[] = "0-5V in";
+
+        int width = oled.getStrWidth(vrange);
+
+        oled.drawStr(
+            (DisplayWidth - width),
+            63,
+            vrange);
 
         if (displayData.signalPresent)
         {
@@ -278,9 +287,9 @@ namespace
                 snprintf(
                     line,
                     sizeof(line),
-                    "ACQUIRING (%u/16)",
-                    displayData.acquiringSamples);
-            }
+                    "ACQUIRING (%u/%u)",
+                    displayData.acquiringSamples,
+                    Config::StableSamples);            }
 
             oled.drawStr(0, 34, line);
         }
