@@ -13,8 +13,8 @@ namespace App
 
     enum class Mode : uint8_t
     {
-        Scope,
-        Generator
+        ScopeView,
+        GeneratorView
     };
 
 }

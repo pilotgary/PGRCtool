@@ -24,6 +24,11 @@ struct Data
     uint8_t acquiringSamples;
 
     uint16_t outputPulseUs;
+
+    uint32_t framePeriodUs;
+    uint16_t frameRateHz;
+
+    uint16_t jitterUs;
 };
 
 bool init();

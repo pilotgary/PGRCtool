@@ -14,19 +14,22 @@ namespace Statistics
 
 struct Data
 {
-    bool signalPresent;
-
-    bool stable;
-
+    // Current
     uint16_t pulseWidthUs;
 
-    uint16_t stablePulseUs;
-
+    // Rolling statistics
+    uint16_t averagePulseUs;
     uint16_t minimumPulseUs;
-
     uint16_t maximumPulseUs;
-
     uint16_t jitterUs;
+
+    // Frame
+    uint32_t framePeriodUs;
+    uint16_t frameRateHz;
+
+    // Quality
+    bool signalPresent;
+    bool stable;
 
     uint8_t sampleCount;
 };

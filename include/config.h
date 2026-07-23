@@ -44,7 +44,7 @@ namespace Config
     constexpr uint16_t ServoExtendedMaxUs = 2500;
 
     constexpr uint32_t PwmFrequencyHz    = 50;
-    constexpr uint8_t  PwmResolutionBits = 16;
+    constexpr uint8_t  PwmResolutionBits = 14;
 
     //--------------------------------------------------
     // Capture

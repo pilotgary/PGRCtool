@@ -15,6 +15,7 @@
 #include "display.h"
 #include "generator.h"
 #include "hardware.h"
+#include "button.h"
 //#include "menu.h"
 #include "statistics.h"
 #include "app.h"
@@ -22,14 +23,16 @@
 
 namespace
 {
-    App::Mode currentMode;
-
-    void handleButton();
+    App::Mode currentMode = App::Mode::GeneratorView;
 }
 
 void setup()
-{
+{   
+    //delay(5000);
+    //Serial.begin(115200);
+
     Hardware::init();
+    Button::init();
     Display::init();
     Generator::init();
     Capture::init();
@@ -41,7 +44,33 @@ void setup()
 
 void loop()
 {
-    handleButton();
+    Button::update();
+
+    switch (Button::getEvent())
+    {
+        case Button::Event::ShortPress:
+
+            if (currentMode == App::Mode::GeneratorView)
+            {
+                Generator::nextPreset();
+            }
+
+            break;
+
+        case Button::Event::LongPress:
+
+            currentMode =
+                (currentMode == App::Mode::ScopeView)
+                ? App::Mode::GeneratorView
+                : App::Mode::ScopeView;
+
+            break;
+
+        default:
+            break;
+    }
+
+    Generator::update();
 
     Capture::update();
 
@@ -58,24 +87,15 @@ void loop()
     display.signalPresent     = stats.signalPresent;
     display.stable            = stats.stable;
     display.inputPulseUs      = stats.pulseWidthUs;
-    display.stablePulseUs     = stats.stablePulseUs;
+    display.stablePulseUs     = stats.averagePulseUs;
     display.acquiringSamples  = stats.sampleCount;
     display.outputPulseUs     = Generator::outputPulseUs();
+    display.framePeriodUs     = stats.framePeriodUs;
+    display.frameRateHz       = stats.frameRateHz;
+    display.jitterUs          = stats.jitterUs;
 
     Display::setData(display);
 
     Display::refresh();
 }
 
-namespace
-{
-
-void handleButton()
-{
-    if (Hardware::buttonPressed())
-    {
-        Generator::nextPreset();
-    }
-}
-
-}

@@ -113,11 +113,11 @@ namespace Display
 
         switch (displayData.mode)
         {
-            case App::Mode::Scope:
+            case App::Mode::ScopeView:
                 drawScopeScreen();
                 break;
 
-            case App::Mode::Generator:
+            case App::Mode::GeneratorView:
                 drawGeneratorScreen();
                 break;
         }
@@ -130,26 +130,21 @@ namespace Display
 namespace
 {
 
-    void drawScopeWaveform()
+    void drawWaveform(uint32_t inputPulseUs, bool signalPresent)
     {
         constexpr int Left = 4;
-        constexpr int Top = 27;
+        constexpr int Right = 127;
+        constexpr int Top = 25;
         constexpr int Bottom = 52;
 
         constexpr int TimebaseUsPerPixel = 50;
 
-        oled.drawFrame(0, Top - 2, 128, Bottom - Top + 5);
-
-        for (int x = Left; x < 128; x += 20)
-        {
-            oled.drawVLine(x, Top, Bottom - Top);
-        }
-
         oled.drawStr(2, 63, "50us/Pixel");
 
-        if (!displayData.signalPresent)
+        if (!signalPresent)
         {
             oled.drawStr(38, 43, "NO SIGNAL");
+            oled.drawHLine(Left, Bottom, Right - Left);
             return;
         }
 
@@ -157,10 +152,10 @@ namespace
 
         const int highPixels =
             constrain(
-                (displayData.inputPulseUs + TimebaseUsPerPixel / 2) /
+                (inputPulseUs + TimebaseUsPerPixel / 2) /
                 TimebaseUsPerPixel,
                 1,
-                128 - risingX - 1);
+                Right - risingX);
 
         const int fallingX = risingX + highPixels;
 
@@ -168,142 +163,9 @@ namespace
         oled.drawVLine(risingX, Top, Bottom - Top + 1);
         oled.drawHLine(risingX, Top, highPixels);
         oled.drawVLine(fallingX, Top, Bottom - Top + 1);
-        oled.drawHLine(fallingX, Bottom, 127 - fallingX);
+        oled.drawHLine(fallingX, Bottom, Right - fallingX);
     }
-
-    void drawGeneratorWaveform()
-    {
-        constexpr int Left   = 4;
-        constexpr int Right  = 127;
-        constexpr int Top    = 27;
-        constexpr int Bottom = 52;
-
-        constexpr uint32_t OffsetUs      = 400;
-        constexpr uint32_t DisplaySpanUs = Config::ServoFrameUs;
-
-        const int drawWidth = Right - Left;
-
-        const float usPerPixel =
-            static_cast<float>(DisplaySpanUs) / drawWidth;
-
-        oled.drawFrame(0, Top - 2, 128, Bottom - Top + 5);
-
-        char label[24];
-
-        snprintf(
-            label,
-            sizeof(label),
-            "%.0fus/pixel",
-            usPerPixel);
-
-        oled.drawStr(2, 62, label);
-
-        auto usToX = [&](uint32_t us)
-        {
-            int x = Left +
-                static_cast<int>(us / usPerPixel + 0.5f);
-
-            if (x < Left)
-                x = Left;
-
-            if (x > Right)
-                x = Right;
-
-            return x;
-        };
-
-        const int riseX =
-            usToX(OffsetUs);
-
-        const int fallX =
-            usToX(
-                OffsetUs +
-                displayData.outputPulseUs);
-
-        oled.drawHLine(
-            Left,
-            Bottom,
-            riseX - Left);
-
-        oled.drawVLine(
-            riseX,
-            Top,
-            Bottom - Top + 1);
-
-        oled.drawHLine(
-            riseX,
-            Top,
-            fallX - riseX);
-
-        oled.drawVLine(
-            fallX,
-            Top,
-            Bottom - Top + 1);
-
-        oled.drawHLine(
-            fallX,
-            Bottom,
-            Right - fallX);
-    }
-
-    void drawScopeScreen()
-    {
-        char line[24];
-
-        oled.drawStr(
-            0,
-            10,
-            "SparkyFlight-S3");
-
-        const char vrange[] = "0-5V in";
-
-        int width = oled.getStrWidth(vrange);
-
-        oled.drawStr(
-            (DisplayWidth - width),
-            63,
-            vrange);
-
-        if (displayData.signalPresent)
-        {
-            snprintf(
-                line,
-                sizeof(line),
-                "Pulse: %4u us",
-                displayData.inputPulseUs);
-
-            oled.drawStr(0, 22, line);
-
-            if (displayData.stable)
-            {
-                snprintf(
-                    line,
-                    sizeof(line),
-                    "STABLE: %4u us",
-                    displayData.stablePulseUs);
-            }
-            else
-            {
-                snprintf(
-                    line,
-                    sizeof(line),
-                    "ACQUIRING (%u/%u)",
-                    displayData.acquiringSamples,
-                    Config::StableSamples);            }
-
-            oled.drawStr(0, 34, line);
-        }
-        else
-        {
-            oled.drawStr(
-                0,
-                22,
-                "Waiting for PWM...");
-        }
-
-        drawScopeWaveform();
-    }
-
+    
     void drawGeneratorScreen()
     {
         char line[24];
@@ -324,12 +186,73 @@ namespace
             22,
             line);
 
-        oled.drawStr(
-            0,
-            34,
-            "Hold 2s: to SCOPE");
+        drawWaveform(displayData.outputPulseUs, true);
+    }
 
-        drawGeneratorWaveform();
+    void drawScopeScreen()
+    {
+        char line[24] = "0-5V in";
+
+        int width = oled.getStrWidth(line);
+
+        oled.drawStr( (DisplayWidth - width), 63, line);
+
+        if (displayData.signalPresent)
+        {
+            if (displayData.stable)
+            {
+                snprintf(
+                    line,
+                    sizeof(line),
+                    "PWM/Jitter %4u/%u us",
+                    displayData.stablePulseUs,
+                    displayData.jitterUs );
+
+                oled.drawStr(0, 10, line);
+
+                snprintf(
+                    line,
+                    sizeof(line),
+                    "Rate       %6u Hz",
+                    displayData.frameRateHz);
+
+                oled.drawStr(0, 22, line);
+            }
+            else
+            {
+                snprintf(
+                    line,
+                    sizeof(line),
+                    "PWM/Jitter %4u/0 us",
+                    displayData.inputPulseUs);
+
+                oled.drawStr(0, 10, line);
+
+                snprintf(
+                    line,
+                    sizeof(line),
+                    "Rate       %6u Hz",
+                    displayData.frameRateHz);
+
+                oled.drawStr(0, 22, line);
+
+                snprintf(
+                    line,
+                    sizeof(line),
+                    "           Acquiring");
+
+                oled.drawStr(0, 34, line);
+            }        
+        }
+        else
+        {
+            oled.drawStr(
+                0,
+                22,
+                "Waiting for PWM...");
+        }
+
+        drawWaveform(displayData.inputPulseUs, displayData.signalPresent);
     }
 
 }
