@@ -14,7 +14,12 @@ namespace App
     enum class Mode : uint8_t
     {
         ScopeView,
-        GeneratorView
+        GeneratorView,
+        StatisticsView
     };
+
+    Mode currentMode();
+
+    void setMode(Mode mode);
 
 }

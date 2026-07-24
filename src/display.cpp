@@ -28,6 +28,7 @@ namespace
     void drawGeneratorWaveform();
     void drawScopeScreen();
     void drawGeneratorScreen();
+    void drawStatisticsScreen();
 
     struct Waveform
     {
@@ -65,45 +66,44 @@ namespace Display
         displayData = data;
     }
 
-     void splash()
+    void splash()
     {
+        constexpr int InstructionStartY = 12;
+        constexpr int InstructionLineSpacing = 12;
+
         oled.clearBuffer();
 
         oled.setFont(u8g2_font_ncenB10_tr);
 
-        const char title[] = "SparkyFlight-S3";
+        const char* const instructions[]
+        {
+            "SparkyFlight-S3",
+            "Button clicks:",
+            "Single: Loop PWM",
+            "Double: Next Function",
+            "Long: Change Mode"
+        };
 
-        const int titleWidth =
-            oled.getStrWidth(title);
+         for (uint8_t index = 0;
+             index < sizeof(instructions) / sizeof(instructions[0]);
+             ++index)
+        {
+            const int width = oled.getStrWidth(instructions[index]);
 
-        oled.drawStr(
-            (DisplayWidth - titleWidth) / 2,
-            20,
-            title);
+            oled.drawStr(
+                (DisplayWidth - width) / 2,
+                InstructionStartY + index * InstructionLineSpacing + (index == 0 ? 0 : 2),
+                instructions[index]);
 
-        oled.setFont(u8g2_font_6x10_tf);
+            oled.setFont(u8g2_font_6x10_tf);
 
-        const char line1[] = "Hold button 2s to";
-        const char line2[] = "switch function";
-
-        int width = oled.getStrWidth(line1);
-
-        oled.drawStr(
-            (DisplayWidth - width) / 2,
-            40,
-            line1);
-
-        width = oled.getStrWidth(line2);
-
-        oled.drawStr(
-            (DisplayWidth - width) / 2,
-            56,
-            line2);
+        }
 
         oled.sendBuffer();
 
-        delay(2000);
+        delay(4000);
     }
+
 
     void refresh()
     {
@@ -113,12 +113,16 @@ namespace Display
 
         switch (displayData.mode)
         {
+            case App::Mode::GeneratorView:
+                drawGeneratorScreen();
+                break;
+
             case App::Mode::ScopeView:
                 drawScopeScreen();
                 break;
 
-            case App::Mode::GeneratorView:
-                drawGeneratorScreen();
+            case App::Mode::StatisticsView:
+                drawStatisticsScreen();
                 break;
         }
 
@@ -168,18 +172,54 @@ namespace
     
     void drawGeneratorScreen()
     {
-        char line[24];
+        char line[24] = "GENERATOR";
 
-        oled.drawStr(
-            0,
-            10,
-            "PWM GENERATOR");
+        int width = oled.getStrWidth(line);
+
+        oled.drawStr( (DisplayWidth - width), 63, line);
+
+        const char* pulseLabel =
+            (displayData.generatorMode == Generator::GeneratorMode::Manual)
+            ? "PWM Value"
+            : "PWM Sweep";
+
+        const char* modeLabel = "Manual";
+
+        switch (displayData.generatorMode)
+        {
+            case Generator::GeneratorMode::Sine:
+                modeLabel = "Sinusoidal";
+                break;
+
+            case Generator::GeneratorMode::Triangular:
+                modeLabel = "Triangular";
+                break;
+
+            case Generator::GeneratorMode::Square:
+                modeLabel = "Squarewave";
+                break;
+
+            case Generator::GeneratorMode::Manual:
+                break;
+        }
 
         snprintf(
             line,
             sizeof(line),
-            "Output: %4u us",
+            "%s : %4u us",
+            pulseLabel,
             displayData.outputPulseUs);
+
+        oled.drawStr(
+            0,
+            10,
+            line);
+
+        snprintf(
+            line,
+            sizeof(line),
+            "Mode : %s",
+            modeLabel);
 
         oled.drawStr(
             0,
@@ -191,7 +231,7 @@ namespace
 
     void drawScopeScreen()
     {
-        char line[24] = "0-5V in";
+        char line[24] = "SCOPE";
 
         int width = oled.getStrWidth(line);
 
@@ -204,45 +244,30 @@ namespace
                 snprintf(
                     line,
                     sizeof(line),
-                    "PWM/Jitter %4u/%u us",
+                    "PWM/Jitter: %4u/%u us",
                     displayData.stablePulseUs,
                     displayData.jitterUs );
 
                 oled.drawStr(0, 10, line);
-
-                snprintf(
-                    line,
-                    sizeof(line),
-                    "Rate       %6u Hz",
-                    displayData.frameRateHz);
-
-                oled.drawStr(0, 22, line);
             }
             else
             {
                 snprintf(
                     line,
                     sizeof(line),
-                    "PWM/Jitter %4u/0 us",
+                    "PWM/Jitter: %4u/0 us",
                     displayData.inputPulseUs);
 
                 oled.drawStr(0, 10, line);
+            }
+            snprintf(
+                line,
+                sizeof(line),
+                "Rate      : %6u Hz",
+                displayData.frameRateHz);
 
-                snprintf(
-                    line,
-                    sizeof(line),
-                    "Rate       %6u Hz",
-                    displayData.frameRateHz);
-
-                oled.drawStr(0, 22, line);
-
-                snprintf(
-                    line,
-                    sizeof(line),
-                    "           Acquiring");
-
-                oled.drawStr(0, 34, line);
-            }        
+            oled.drawStr(0, 22, line);
+                  
         }
         else
         {
@@ -255,4 +280,46 @@ namespace
         drawWaveform(displayData.inputPulseUs, displayData.signalPresent);
     }
 
+    void drawStatisticsScreen()
+    {
+        char line[24];
+
+        oled.drawStr(
+            0,
+            10,
+            "PWM STATISTICS");
+
+        snprintf(
+            line,
+            sizeof(line),
+            "Average : %4u us",
+            displayData.stablePulseUs);
+
+        oled.drawStr(0,22,line);
+
+        snprintf(
+            line,
+            sizeof(line),
+            "Peak-Pk : %4u us",
+            displayData.peakToPeakUs);
+
+        oled.drawStr(0,34,line);
+
+        snprintf(
+            line,
+            sizeof(line),
+            "Min/Max : %4u/%4u",
+            displayData.minimumPulseUs,
+            displayData.maximumPulseUs);
+
+        oled.drawStr(0,46,line);
+
+        snprintf(
+            line,
+            sizeof(line),
+            "Samples : %lu",
+            (unsigned long)displayData.totalSamples);
+
+        oled.drawStr(0,58,line);
+    }
 }

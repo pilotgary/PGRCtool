@@ -14,20 +14,19 @@ namespace Statistics
 
 struct Data
 {
-    // Current
     uint16_t pulseWidthUs;
 
-    // Rolling statistics
     uint16_t averagePulseUs;
     uint16_t minimumPulseUs;
     uint16_t maximumPulseUs;
+    uint16_t peakToPeakUs;
     uint16_t jitterUs;
 
-    // Frame
+    uint32_t totalSamples;
+
     uint32_t framePeriodUs;
     uint16_t frameRateHz;
 
-    // Quality
     bool signalPresent;
     bool stable;
 
@@ -36,7 +35,11 @@ struct Data
 
 void init();
 
+void reset();
+
 void update(const Capture::Measurement& measurement);
+
+bool readData(Data& data);
 
 Data data();
 

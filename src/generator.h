@@ -10,11 +10,12 @@
 namespace Generator
 {
 
-enum class Mode : uint8_t
+enum class GeneratorMode : uint8_t
 {
-    Fixed,
-    Sweep,
-    Sine
+    Manual,
+    Sine,
+    Triangular,
+    Square
 };
 
 bool init();
@@ -23,10 +24,12 @@ void update();
 
 void nextPreset();
 
-void nextMode();
+void nextSweepMode();
+
+void toggleMode();
 
 uint16_t outputPulseUs();
 
-Mode mode();
+GeneratorMode mode();
 
 } // namespace Generator

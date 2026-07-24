@@ -24,6 +24,7 @@
 namespace
 {
     App::Mode currentMode = App::Mode::GeneratorView;
+    App::Mode previousMode = App::Mode::GeneratorView;
 }
 
 void setup()
@@ -46,29 +47,73 @@ void loop()
 {
     Button::update();
 
-    switch (Button::getEvent())
+    switch (Button::readEvent())
     {
         case Button::Event::ShortPress:
 
             if (currentMode == App::Mode::GeneratorView)
             {
-                Generator::nextPreset();
+                if (Generator::mode() == Generator::GeneratorMode::Manual)
+                {
+                    Generator::nextPreset();
+                }
+                else
+                {
+                    Generator::nextSweepMode();
+                }
+            }
+
+            break;
+
+        case Button::Event::DoubleClick:
+
+            if (currentMode == App::Mode::GeneratorView)
+            {
+                Generator::toggleMode();
+                break;
+            }
+            switch (currentMode)
+            {
+                case App::Mode::ScopeView:
+                    currentMode = App::Mode::StatisticsView;
+                    break;
+
+                case App::Mode::StatisticsView:
+                    currentMode = App::Mode::ScopeView;
+                    break;
+
+                default:
+                    break;
             }
 
             break;
 
         case Button::Event::LongPress:
 
-            currentMode =
-                (currentMode == App::Mode::ScopeView)
-                ? App::Mode::GeneratorView
-                : App::Mode::ScopeView;
+            switch (currentMode)
+            {
+                case App::Mode::GeneratorView:
+                    currentMode = App::Mode::ScopeView;
+                    break;
+
+                default:
+                    currentMode = App::Mode::GeneratorView;
+                    break;
+            }
 
             break;
 
         default:
             break;
     }
+
+    if (currentMode == App::Mode::ScopeView &&
+        previousMode != App::Mode::ScopeView)
+    {
+        Statistics::reset();
+    }
+
+    previousMode = currentMode;
 
     Generator::update();
 
@@ -78,7 +123,17 @@ void loop()
 
     Statistics::update(measurement);
 
-    const auto stats = Statistics::data();
+    Statistics::Data stats = Statistics::data();
+
+    if (currentMode == App::Mode::ScopeView)
+    {
+        Statistics::Data newStatistics;
+
+        if (Statistics::readData(newStatistics))
+        {
+            stats = newStatistics;
+        }
+    }
 
     Display::Data display{};
 
@@ -90,9 +145,14 @@ void loop()
     display.stablePulseUs     = stats.averagePulseUs;
     display.acquiringSamples  = stats.sampleCount;
     display.outputPulseUs     = Generator::outputPulseUs();
+    display.generatorMode     = Generator::mode();
     display.framePeriodUs     = stats.framePeriodUs;
     display.frameRateHz       = stats.frameRateHz;
     display.jitterUs          = stats.jitterUs;
+    display.minimumPulseUs    = stats.minimumPulseUs;
+    display.maximumPulseUs    = stats.maximumPulseUs;
+    display.peakToPeakUs      = stats.peakToPeakUs;
+    display.totalSamples      = stats.totalSamples;
 
     Display::setData(display);
 
