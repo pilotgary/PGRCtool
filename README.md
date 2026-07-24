@@ -72,8 +72,8 @@ Default assignments:
 
 | Function | GPIO |
 |----------|-----:|
-| OLED SDA | 1 |
-| OLED SCL | 2 |
+| OLED SCL | 1 |
+| OLED SDA | 2 |
 | PWM Input | 4 |
 | PWM Output | 5 |
 | Push Button | 6 |
