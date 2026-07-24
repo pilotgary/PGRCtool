@@ -60,6 +60,8 @@ Designed for an ESP32-S3 development board together with:
 - PWM input
 - PWM output
 
+**NOTE : The PWM input and PWM output pins on the ESP32-S3 are 3.3V rated.  Applying 5V to them could damage the ESP32-S3. **
+
 GPIO assignments are defined in:
 
 ```
