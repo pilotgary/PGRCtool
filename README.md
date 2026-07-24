@@ -80,7 +80,7 @@ Default assignments:
 
 The PWM output can be looped back to the PWM input for self testing.  The signal generator keeps running in the last set mode while the screen is displaying the PWM input waveform.
 
---
+---
 
 ## Wiring
 
