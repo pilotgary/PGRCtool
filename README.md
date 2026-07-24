@@ -60,7 +60,7 @@ Designed for an ESP32-S3 development board together with:
 - PWM input
 - PWM output
 
-**NOTE : The PWM input and PWM output pins on the ESP32-S3 are 3.3V rated.  Applying 5V to them could damage the ESP32-S3. **
+**NOTE : The PWM input and PWM output pins on the ESP32-S3 are 3.3V rated.  Applying 5V to them could damage the ESP32-S3.  Use a 3.3V to 5V logic level level converter or a voltage divider. More details below.**
 
 GPIO assignments are defined in:
 
@@ -77,6 +77,12 @@ Default assignments:
 | PWM Input | 4 |
 | PWM Output | 5 |
 | Push Button | 6 |
+
+The PWM output can be looped back to the PWM input for self testing.  The signal generator keeps running in the last set mode while the screen is displaying the PWM input waveform.
+
+--
+
+## Wiring
 
 ---
 
