@@ -13,8 +13,8 @@ namespace Config
     // GPIO
     //--------------------------------------------------
 
-    constexpr uint8_t OledSdaPin = 1;
-    constexpr uint8_t OledSclPin = 2;
+    constexpr uint8_t OledSclPin = 1;
+    constexpr uint8_t OledSdaPin = 2;
 
     constexpr uint8_t PwmInputPin = 4;
     constexpr uint8_t PwmOutputPin = 5;
