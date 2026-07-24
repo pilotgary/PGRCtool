@@ -73,11 +73,11 @@ namespace Display
 
         oled.clearBuffer();
 
-        oled.setFont(u8g2_font_ncenB10_tr);
+        oled.setFont(u8g2_font_7x13B_tf);
 
         const char* const instructions[]
         {
-            "SparkyFlight-S3",
+            "SparkyFlight-PAG",
             "Button clicks:",
             "Single: Loop PWM",
             "Double: Next Function",
