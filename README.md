@@ -1,6 +1,6 @@
 # SparkyFlight-PAG
 
-**RC PWM Signal Analyzer & Generator for the ESP32-S3**
+**RC <ins>P</ins>WM Signal <ins>A</ins>nalyzer & <ins>G</ins>enerator for the ESP32-S3**
 
 SparkyFlight-PAG is a compact handheld tool for generating, viewing and analysing hobby RC PWM servo signals using an ESP32-S3 and a 128×64 OLED display.
 
