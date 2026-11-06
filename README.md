@@ -84,6 +84,8 @@ The PWM output can be looped back to the PWM input for self testing.  The signal
 
 ## Wiring
 
+![description](images/wiring.jpg)
+
 ---
 
 ## User Interface
