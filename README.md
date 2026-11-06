@@ -215,18 +215,6 @@ pio device monitor
 
 ---
 
-## Future Development
-
-Planned enhancements include:
-
-- Additional waveform types
-- User configurable sweep parameters
-- Extended statistics
-- Persistent settings
-- Additional RC protocol tools
-
----
-
 ## License
 
 This project is released under the MIT License.
