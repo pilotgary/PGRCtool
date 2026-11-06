@@ -1,8 +1,8 @@
-# GarysRCtool
+# PGRCTool
 
 **RC PWM Signal Analyzer & Generator for the ESP32-S3**
 
-GarysRCtool is a compact handheld tool for generating, viewing and analysing hobby RC PWM servo signals using an ESP32-S3 and a 128×64 OLED display.
+PGRCTool is a compact handheld tool for generating, viewing and analysing hobby RC PWM servo signals using an ESP32-S3 and a 128×64 OLED display.
 
 Designed primarily for RC aircraft, robotics and embedded development, it combines a precision servo signal generator with a real-time PWM analyser in a simple single-button user interface.
 

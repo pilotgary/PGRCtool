@@ -1,5 +1,7 @@
 #pragma once
 
+#define EXTENDED_RANGE
+
 /**
  * @file config.h
  * @brief Global project configuration.

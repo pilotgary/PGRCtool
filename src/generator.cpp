@@ -19,9 +19,15 @@ double sineTable[SineTableSize];
 
 constexpr uint16_t FixedPresets[]
 {
+#ifdef EXTENDED_RANGE
+    500,
+#endif
     1000,
     1500,
-    2000
+    2000,
+#ifdef EXTENDED_RANGE
+    2500
+#endif
 };
 
 constexpr uint8_t FixedPresetCount =

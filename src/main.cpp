@@ -1,6 +1,6 @@
 /**
  * @file main.cpp
- * @brief SparkyFlight-PAG application entry point.
+ * @brief PGRCTool application entry point.
  *
  * Initialises all modules and executes the main application loop.
  * This file contains only application orchestration and state

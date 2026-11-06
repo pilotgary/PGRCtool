@@ -77,7 +77,7 @@ namespace Display
 
         const char* const instructions[]
         {
-            "SparkyFlight-PAG",
+            "PGRCTool",
             "Button clicks:",
             "Single: Loop PWM",
             "Double: Next Function",

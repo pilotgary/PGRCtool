@@ -2,7 +2,7 @@
 
 /**
  * @file version.h
- * @brief SparkyFlight-PAG firmware version information.
+ * @brief PGRCTool firmware version information.
  */
 
 #include <stdint.h>
