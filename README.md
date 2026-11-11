@@ -230,12 +230,3 @@ pio device monitor
 This project is released under the MIT License.
 
 ---
-
-## Acknowledgements
-
-Developed using:
-
-- ESP32-S3
-- PlatformIO
-- Arduino Framework
-- SSD1306 OLED display library
