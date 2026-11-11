@@ -88,6 +88,16 @@ The PWM output can be looped back to the PWM input for self testing.  The signal
 
 ---
 
+### Case
+
+![3D Printed Case](images/3DPrintedCase.png)
+
+STEP and STL files for a 3D printed case are available in the repository and on Printables, Thingiverse and Makerworld.
+
+The "3D Printed Case" folder also contains 3MF files for the Snapmaker U1 and the Bambu Labs A1 Mini.
+
+---
+
 ## User Interface
 
 The entire application is controlled using a single push button.
@@ -229,11 +239,3 @@ Developed using:
 - PlatformIO
 - Arduino Framework
 - SSD1306 OLED display library
-
----
-
-## Version
-
-Current Release Candidate:
-
-**RC1**
