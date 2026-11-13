@@ -49,6 +49,16 @@ Displays:
 - Scope screen
 - Statistics screen
 
+### Power
+
+Can be powered from USB or the 5V receiver output.  
+- A optional diode can protect the ESP32-S3 regulator if both are connected at the same time or the power supply is reversed.
+- Small servos can be powered just from the USB connection.
+
+The PWM output is at 3.3V.  Most servos will work at this level. Certainly all the ones I have tested have worked.
+
+The native ESP32-S3 PWM input is limited to 3.3V.  This is fine for some modern recievers like the Radiomaster ER6 which output the PWM signal at 3.3V, but for a general purpose device a Zener Diode and resistor can be added to allow 3.3 to 5V use.
+
 ---
 
 ## Hardware
@@ -60,7 +70,15 @@ Designed for an ESP32-S3 development board together with:
 - PWM input
 - PWM output
 
-**NOTE : The PWM input and PWM output pins on the ESP32-S3 are 3.3V rated.  Applying 5V to them could damage the ESP32-S3.  Use a 3.3V to 5V logic level level converter or a voltage divider. More details below.**
+**Optional**
+
+The PWM input and PWM output pins on the ESP32-S3 are 3.3V rated.  Applying 5V to them could damage the ESP32-S3. Adding the low cost parts below will protect the ESP32-S3. These can be sourced from eBay 
+
+- 1N5819 Schottky diode
+- BZX55C3V3 Zener Diode
+- 1K Resistor
+
+## Pin Assignments
 
 GPIO assignments are defined in:
 
